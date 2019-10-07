@@ -3,14 +3,31 @@
 <head>
     <meta charset="UTF-8">
     <title>Moje single page application</title>
+    <script>
+        function nactidatum() {
+            fetch("http://localhost:8888/svatky").then(function(response) {
+                response.text().then(function(text) {
+                    let obj = JSON.parse(text);
+                    document.getElementById("svatek").innerHTML = obj.svatek;
+                    document.getElementById("datum").innerHTML = obj.datumcesky;
+                    document.getElementById("svatekzitra").innerHTML = obj.svatekzitra;
+                });
+            });
+        }
+
+
+
+    </script>
 </head>
-<body>
+<body onload="nactidatum()" style="background-color: yellow">
 
-<h1>appka</h1>
+<h1>Vítejte u mně</h1>
 
-Dnes je <span id="datum">...</span>, svátek má <span id="svatek">...</span>.
-
+Dnes je <span id="datum">...</span>, svátek má <span id="svatek">...</span>, zítra má <span id="svatekzitra">...</span>.
+<br>
+<br>
 <img src="biceps.jpg">
-
+<br>
+<span style="font-size: 100px; color: yellow; background-color: black" > Toto je Danův bicák, pokud by Vám to náhodou nedošlo...</span>
 </body>
 </html>
