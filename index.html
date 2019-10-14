@@ -25,8 +25,24 @@
                 });
             });
         }
-
-
+            function posliZpravu() {
+                let chatmsg = document.getElementById("chatmsg").value;
+                fetch("http://localhost:8888/addmsg?msg="+chatmsg).then(function(response) {
+                    response.text().then(function(text) {
+                    });
+                });
+}
+        function seznamzprav() {
+            fetch("http://localhost:8888/addmsg?msg="+chatmsg).then(function(response) {
+                response.text().then(function(text) {
+                    let obj = JSON.parse(text);
+                    let s = "";
+                    for (let o of obj.messages) {
+                        s = s + o.time + "<br>" + o.text + "<br>"
+                    }
+                });
+            });
+        }
     </script>
 </head>
 <body onload="nactidatum()" style="background-color: yellow">
@@ -35,9 +51,14 @@
 
 Dnes je <span id="datum">...</span>, svátek má <span id="svatek">...</span>, zítra má <span id="svatekzitra">...</span>.
 <br>
+
+<h1>chat</h1>
+<div id="msg"></div>
+<input type="text" id="chatmsg"><input type="button" value="Odešli" onclick="">
 <br>
 <input type="date" id="kalendar" onchange="nactidatum2()"> má svátek <span id="svatek2">...</span>
 <br>
+<br><br>
 <img src="biceps.jpg">
 <br>
 <span style="font-size: 100px; color: yellow; background-color: black" > Toto je Danův bicák, pokud by Vám to náhodou nedošlo...</span>

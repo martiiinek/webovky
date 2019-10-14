@@ -19,6 +19,7 @@ SVATKY[11] = [ "",'Felix', 'Památka zesnulých', 'Hubert', 'Karel', 'Miriam', '
 SVATKY[12] = [ "",'Iva', 'Blanka', 'Svatoslav', 'Barbora', 'Jitka', 'Mikuláš', 'Ambrož', 'Květoslava', 'Vratislav', 'Julie', 'Dana', 'Simona', 'Lucie', 'Lýdie', 'Radana', 'Albína', 'Daniel', 'Miloslav', 'Ester', 'Dagmar', 'Natálie', 'Šimon', 'Vlasta', 'Adam a Eva , Štědrý den', '1. svátek vánoční', 'Štěpán , 2. svátek vánoční', 'Žaneta', 'Bohumila', 'Judita', 'David', 'Silvestr'];
 
 let citac = 0;
+let msgs = new Array();
 
 function processStaticFiles (res, fileName) {
     fileName = fileName.substr(1);
@@ -91,15 +92,15 @@ function processStaticFiles (res, fileName) {
             res.end(JSON.stringify(obj));
         }
             else if (q.pathname == "/svatky") {
-                res.writeHead(200, {
-                        "Content-type": "application/json",
-                        "Access-Control-Allow-Origin": "*"
-                    });
+            res.writeHead(200, {
+                "Content-type": "application/json",
+                "Access-Control-Allow-Origin": "*"
+            });
             let obj = {};
             if (q.query["m"] && q.query["d"]) {
                 let d = q.query["d"];
                 let m = q.query["m"];
-                obj.systdatum = d+"."+m+".";
+                obj.systdatum = d + "." + m + ".";
                 obj.svatek = SVATKY[m][d];
             } else {
                 let d = new Date();
@@ -110,8 +111,25 @@ function processStaticFiles (res, fileName) {
                 obj.svatekzitra = SVATKY[d.getMonth() + 1][d.getDate() + 1];
             }
             res.end(JSON.stringify(obj));
+        }else if (q.pathname == "/chat/listmsg") {
+                res.writeHead(200, {
+                    "Content-type": "application/json",
+                });
+            let obj = {};
+            obj.messages = msgs;
+            res.end(JSON.stringify(obj));
+        } else if (q.pathname == "/chat/addmsg") {
+                res.writeHead(200, {
+                    "Content-type": "application/json",
+                });
+                let obj = {};
+                obj.text = q.query["msg"];
+                obj.time = new Date();
+                msgs.push(obj);
+            res.end(JSON.stringify(obj));
 
-        } else {
+            }
+         else {
             res.writeHead(200, {"Content-type": "text/html"});
             res.end("<html lang='cs'><head><meta charset='UTF8'></head><body>Počet volání: " + citac + "</body></html>");
         }
