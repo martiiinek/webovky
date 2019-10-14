@@ -5,6 +5,8 @@
     <title>Moje single page application</title>
     <script>
         function nactidatum() {
+            document.getElementById("kalendar").valueAsDate = new Date();
+            nactidatum2();
             fetch("http://localhost:8888/svatky").then(function(response) {
                 response.text().then(function(text) {
                     let obj = JSON.parse(text);
@@ -14,7 +16,15 @@
                 });
             });
         }
-
+        function nactidatum2() {
+            let d = document.getElementById("kalendar").valueAsDate;
+            fetch("http://localhost:8888/svatky?d="+d.getDate()+ "&m="+(d.getMonth()+1)).then(function(response) {
+                response.text().then(function(text) {
+                    let obj = JSON.parse(text);
+                    document.getElementById("svatek2").innerHTML = obj.svatek;
+                });
+            });
+        }
 
 
     </script>
@@ -25,6 +35,8 @@
 
 Dnes je <span id="datum">...</span>, svátek má <span id="svatek">...</span>, zítra má <span id="svatekzitra">...</span>.
 <br>
+<br>
+<input type="date" id="kalendar" onchange="nactidatum2()"> má svátek <span id="svatek2">...</span>
 <br>
 <img src="biceps.jpg">
 <br>
