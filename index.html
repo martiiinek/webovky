@@ -4,59 +4,67 @@
     <meta charset="UTF-8">
     <title>Moje single page application</title>
     <script>
-        function nactidatum() {
+        function nactiSvatky() {
+            setInterval(seznamZprav, 1000);
             document.getElementById("kalendar").valueAsDate = new Date();
-            nactidatum2();
+            svatkyPodleKalendare();
             fetch("http://localhost:8888/svatky").then(function(response) {
                 response.text().then(function(text) {
                     let obj = JSON.parse(text);
-                    document.getElementById("svatek").innerHTML = obj.svatek;
                     document.getElementById("datum").innerHTML = obj.datumcesky;
-                    document.getElementById("svatekzitra").innerHTML = obj.svatekzitra;
+                    document.getElementById("svatek").innerHTML = obj.svatek;
+                    document.getElementById("svatek2").innerHTML = obj.svatekzitra;
+                    document.getElementById("svatek3").innerHTML = obj.svatekzitra;
                 });
             });
         }
-        function nactidatum2() {
+        function svatkyPodleKalendare() {
             let d = document.getElementById("kalendar").valueAsDate;
-            fetch("http://localhost:8888/svatky?d="+d.getDate()+ "&m="+(d.getMonth()+1)).then(function(response) {
+            fetch("http://localhost:8888/svatky?d="+d.getDate()+"&m="+(d.getMonth()+1)).then(function(response) {
                 response.text().then(function(text) {
                     let obj = JSON.parse(text);
-                    document.getElementById("svatek2").innerHTML = obj.svatek;
+                    document.getElementById("svatek3").innerHTML = obj.svatek;
                 });
             });
         }
-            function posliZpravu() {
-                let chatmsg = document.getElementById("chatmsg").value;
-                fetch("http://localhost:8888/addmsg?msg="+chatmsg).then(function(response) {
-                    response.text().then(function(text) {
-                    });
+        function posliZpravu() {
+            let chatmsg = document.getElementById("chatmsg").value;
+            let prezdivka = document.getElementById("prezdivka").value;
+            fetch("http://localhost:8888/chat/addmsg?msg="+prezdivka+":"+chatmsg).then(function(response) {
+                response.text().then(function(text) {
+                    let obj = JSON.parse(text);
                 });
-}
-        function seznamzprav() {
-            fetch("http://localhost:8888/addmsg?msg="+chatmsg).then(function(response) {
+                document.getElementById("chatmsg").value = "";
+            });
+        }
+        function seznamZprav() {
+            fetch("http://localhost:8888/chat/listmsgs").then(function(response) {
                 response.text().then(function(text) {
                     let obj = JSON.parse(text);
                     let s = "";
                     for (let o of obj.messages) {
-                        s = s + o.time + "<br>" + o.text + "<br>"
+                        s = s + o.time + ": " + o.text + "<br>";
                     }
+                    document.getElementById("chatmsgs").innerHTML = s;
                 });
             });
         }
     </script>
 </head>
-<body onload="nactidatum()" style="background-color: yellow">
-
+<body onload="nactiSvatky()" style="background-color: yellow">
 <h1>Vítejte u mně</h1>
 
-Dnes je <span id="datum">...</span>, svátek má <span id="svatek">...</span>, zítra má <span id="svatekzitra">...</span>.
+Dnes je <span id="datum">...</span>, svátek má <span id="svatek">...</span>, zítra má <span id="svatek2">...</span>.
 <br>
 
 <h1>chat</h1>
-<div id="msg"></div>
-<input type="text" id="chatmsg"><input type="button" value="Odešli" onclick="">
+<div id="chatmsgs"></div>
+<input type="text" id="prezdivka">
 <br>
-<input type="date" id="kalendar" onchange="nactidatum2()"> má svátek <span id="svatek2">...</span>
+<input type="text" id="chatmsg"><input type="button" value="Odešli" onclick="posliZpravu()">
+
+<br><br>
+<input type="date" id="kalendar" onchange="nactidatum2()"> má svátek <span id="svatek3">...</span>
 <br>
 <br><br>
 <img src="biceps.jpg">
@@ -64,3 +72,4 @@ Dnes je <span id="datum">...</span>, svátek má <span id="svatek">...</span>, z
 <span style="font-size: 100px; color: yellow; background-color: black" > Toto je Danův bicák, pokud by Vám to náhodou nedošlo...</span>
 </body>
 </html>
+

@@ -2,6 +2,11 @@ const http = require("http");
 const dateformat = require("dateformat");
 const fs = require ("fs");
 const url = require ("url");
+const apiDenVTydnu = require('./apiDenVTydnu').apiDenVTydnu;
+const apisvatky = require('./apisvatky').apisvatky;
+const apichat = require('./apichat').apichat;
+
+
 
 const DNY_V_TYDNU = ["Neděle","Pondělí","Úterý", "Středa", "Čtvrtek", "Pátek", "Sobota"];
 const SVATKY = new Array();
@@ -15,7 +20,7 @@ SVATKY[7] = [ "",'Jaroslava', 'Patricie', 'Radomír', 'Prokop', 'Státní sváte
 SVATKY[8] = [ "",'Oskar', 'Gustav', 'Miluše', 'Dominik', 'Kristián', 'Oldřiška', 'Lada', 'Soběslav', 'Roman', 'Vavřinec', 'Zuzana', 'Klára', 'Alena', 'Alan', 'Hana', 'Jáchym', 'Petra', 'Helena', 'Ludvík', 'Bernard', 'Johana', 'Bohuslav', 'Sandra', 'Bartoloměj', 'Radim', 'Luděk', 'Otakar', 'Augustýn', 'Evelína', 'Vladěna', 'Pavlína'];
 SVATKY[9] = [ "",'Linda a Samuel', 'Adéla', 'Bronislav', 'Jindřiška', 'Boris', 'Boleslav', 'Regína', 'Mariana', 'Daniela', 'Irma', 'Denisa', 'Marie', 'Lubor', 'Radka', 'Jolana', 'Ludmila', 'Naděžda', 'Kryštof', 'Zita', 'Oleg', 'Matouš', 'Darina', 'Berta', 'Jaromír', 'Zlata', 'Andrea', 'Jonáš', 'Václav', 'Michal', 'Jeroným'];
 SVATKY[10] = [ "",'Igor', 'Olívie a Oliver', 'Bohumil', 'František', 'Eliška', 'Hanuš', 'Justýna', 'Věra', 'Štefan a Sára', 'Marina', 'Andrej', 'Marcel', 'Renáta', 'Agáta', 'Tereza', 'Havel', 'Hedvika', 'Lukáš', 'Michaela', 'Vendelín', 'Brigita', 'Sabina', 'Teodor', 'Nina', 'Beáta', 'Erik', 'Šarlota a Zoe', 'Statní svátek - Vznik Československa', 'Silvie', 'Tadeáš', 'Štěpánka'];
-SVATKY[11] = [ "",'Felix', 'Památka zesnulých', 'Hubert', 'Karel', 'Miriam', 'Liběna', 'Saskie', 'Bohumír', 'Bohdan', 'Evžen', 'Martin', 'Benedikt', 'Tibor', 'Sáva', 'Leopold', 'Otmar', 'Mahulena', 'Romana', 'Alžběta', 'Nikola', 'Albert', 'Cecílie', 'Klement', 'Emílie', 'Kateřina', 'Artur', 'Xenie', 'René', 'Zina', 'Ondřej'];
+SVATKY[11] = [ "",'Felix', 'Památka zesnulých', 'Hubert', 'Karel', 'Miriam', 'Liběna', 'Saskie', 'Bohumír', 'Bohdan', 'Evžen', 'MARTIN JOOOOOOO', 'Benedikt', 'Tibor', 'Sáva', 'Leopold', 'Otmar', 'Mahulena', 'Romana', 'Alžběta', 'Nikola', 'Albert', 'Cecílie', 'Klement', 'Emílie', 'Kateřina', 'Artur', 'Xenie', 'René', 'Zina', 'Ondřej'];
 SVATKY[12] = [ "",'Iva', 'Blanka', 'Svatoslav', 'Barbora', 'Jitka', 'Mikuláš', 'Ambrož', 'Květoslava', 'Vratislav', 'Julie', 'Dana', 'Simona', 'Lucie', 'Lýdie', 'Radana', 'Albína', 'Daniel', 'Miloslav', 'Ester', 'Dagmar', 'Natálie', 'Šimon', 'Vlasta', 'Adam a Eva , Štědrý den', '1. svátek vánoční', 'Štěpán , 2. svátek vánoční', 'Žaneta', 'Bohumila', 'Judita', 'David', 'Silvestr'];
 
 let citac = 0;
@@ -37,7 +42,7 @@ function processStaticFiles (res, fileName) {
             res.end();
         });
     } else {
-        res.writeHead(404); // soubor neexistuje
+        res.writeHead(404);
         res.end();
     }
 }
@@ -75,61 +80,15 @@ function processStaticFiles (res, fileName) {
             let obj = {};
             obj.pocetVolani = citac;
             res.end(JSON.stringify(obj));
-        } else if (q.pathname == "/datum") {
-            res.writeHead(200, {
-                "Content-type": "application/json",
-                "Access-Control-Allow-Origin": "*"
-            });
-            let d = new Date();
-            let obj = {};
-            obj.systdatum = d;
-            obj.denVTydnuCiselne = d.getDate();
-            obj.datumcesky = d.getDate() + "." + (d.getMonth() + 1) + "." + d.getFullYear();
-            obj.datumceksyformat = dateformat(d, "dd.mm.yyyy");
-            obj.datumacasceskyformat = dateformat(d, "dd.mm.yy hh:mm:ss");
-            obj.cascesky = d.getHours() + ":" + d.getMinutes() + ":" + d.getSeconds();
-            obj.denvtydnucesky = DNY_V_TYDNU [d.getDay()];
-            res.end(JSON.stringify(obj));
+        } else if (q.pathname == "/denvtydnu") {
+            apiDenVTydnu(req, res);
         }
             else if (q.pathname == "/svatky") {
-            res.writeHead(200, {
-                "Content-type": "application/json",
-                "Access-Control-Allow-Origin": "*"
-            });
-            let obj = {};
-            if (q.query["m"] && q.query["d"]) {
-                let d = q.query["d"];
-                let m = q.query["m"];
-                obj.systdatum = d + "." + m + ".";
-                obj.svatek = SVATKY[m][d];
-            } else {
-                let d = new Date();
-                obj.systdatum = d;
+            apisvatky(req, res);
+        }else if (q.pathname.startsWith("/chat/")) {
+            apichat(req,res);
 
-                obj.datumcesky = d.getDate() + "." + (d.getMonth() + 1) + "." + d.getFullYear();
-                obj.svatek = SVATKY[d.getMonth() + 1][d.getDate()];
-                obj.svatekzitra = SVATKY[d.getMonth() + 1][d.getDate() + 1];
-            }
-            res.end(JSON.stringify(obj));
-        }else if (q.pathname == "/chat/listmsg") {
-                res.writeHead(200, {
-                    "Content-type": "application/json",
-                });
-            let obj = {};
-            obj.messages = msgs;
-            res.end(JSON.stringify(obj));
-        } else if (q.pathname == "/chat/addmsg") {
-                res.writeHead(200, {
-                    "Content-type": "application/json",
-                });
-                let obj = {};
-                obj.text = q.query["msg"];
-                obj.time = new Date();
-                msgs.push(obj);
-            res.end(JSON.stringify(obj));
-
-            }
-         else {
+        } else {
             res.writeHead(200, {"Content-type": "text/html"});
             res.end("<html lang='cs'><head><meta charset='UTF8'></head><body>Počet volání: " + citac + "</body></html>");
         }
