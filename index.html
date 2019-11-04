@@ -37,6 +37,7 @@
                 document.getElementById("chatmsg").value = "";
             });
         }
+
         function seznamZprav() {
             fetch("http://localhost:8888/chat/listmsgs").then(function(response) {
                 response.text().then(function(text) {
@@ -48,6 +49,14 @@
                     document.getElementById("chatmsgs").innerHTML = s;
                 });
             });
+        }
+        function priklad() {
+            fetch("http://localhost:8888/priklad").then(function(response) {
+            response.text().then(function(text) {
+                let obj = JSON.parse(text);
+                document.getElementById("nahodnecislo").innerHTML = nahodnecislo;
+            });
+            })
         }
     </script>
 </head>
@@ -66,6 +75,9 @@ Dnes je <span id="datum">...</span>, svátek má <span id="svatek">...</span>, z
 <br><br>
 <input type="date" id="kalendar" onchange="nactidatum2()"> má svátek <span id="svatek3">...</span>
 <br>
+Uhádni čislo od 1 do 10
+<br>
+<input type="text" value="priklad">
 <br><br>
 <img src="biceps.jpg">
 <br>

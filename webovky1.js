@@ -5,6 +5,7 @@ const url = require ("url");
 const apiDenVTydnu = require('./apiDenVTydnu').apiDenVTydnu;
 const apisvatky = require('./apisvatky').apisvatky;
 const apichat = require('./apichat').apichat;
+const apipriklad = require('./apipriklad').apipriklad;
 
 
 
@@ -88,7 +89,10 @@ function processStaticFiles (res, fileName) {
         }else if (q.pathname.startsWith("/chat/")) {
             apichat(req,res);
 
-        } else {
+        } else if (q.pathname == "/priklad"){
+                apipriklad(req, res);
+        }
+            else {
             res.writeHead(200, {"Content-type": "text/html"});
             res.end("<html lang='cs'><head><meta charset='UTF8'></head><body>Počet volání: " + citac + "</body></html>");
         }
