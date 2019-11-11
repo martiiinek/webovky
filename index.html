@@ -26,21 +26,27 @@
                 });
             });
         }
-        function vybercislo (){
+        let nahodnecislo;
+        function cislo (){
             fetch("http://localhost:8888/cislo").then(function(response) {
                 response.text().then(function(text) {
                     let obj = JSON.parse(text);
-                    document.getElementById("nahodnecislo").innerHTML = obj.nahodnecislo;
+                    //document.getElementById("nahodnecislo").innerHTML = obj.nahodnecislo;
+                    nahodnecislo = obj.nahodnecislo;
                 });
-                let input = document.getElementById("vstup").value;
-                if (input === nahodnecislo){
-                    document.getElementById("porovnani").innerHTML = "Správně!";
-                }
-                else{
-                    document.getElementById("porovnani").innerHTML = "Špatně!";
-                }
+
             });
         }
+        function porovnani () {
+            let input = document.getElementById("vstup").value;
+            if (input == nahodnecislo){
+                document.getElementById("porovnani").innerHTML = "Správně!";
+            }
+            else{
+                document.getElementById("porovnani").innerHTML = "Špatně!";
+            }
+        }
+
         function poslizpravu(){
             let chatmsg = document.getElementById("chatmsg").value;
             let prezdivka = document.getElementById("prezdivka").value;
@@ -69,6 +75,7 @@
                 poslizpravu();
             }
         }
+
     </script>
 </head>
 <body onload = nactisvatky() style="background-color: yellow">
@@ -93,11 +100,14 @@ Dnes je <span id="datum">...</span>, svátek má <span id="svatek">...</span>, z
 <span style="font-size: 100px; color: yellow; background-color: black" > Toto je Danův bicák, pokud by Vám to náhodou nedošlo...</span>
 <br>
 <br>
-<b style = "color:green"> Zkus uhádnout moje číslíčko od 5 do 10 :)</b>
+<b style = "color:green"> Zkus uhádnout číslo od 5 do 10, bráško</b>
 <br>
 <input type="text"  id="vstup" placeholder="Hádej">
-<input type="button" value = "Odešli" onclick = "vybercislo()">
-<span>Nahodne cislo je </span><span id="nahodnecislo">....</span>
+<input type="button" value = "Hádej" onclick = "porovnani()">
+<input type="button" value = "Generuj" onclick = "cislo()">
+<span id="nahodnecislo"></span>
+<br>
+Je to <span id="porovnani"></span>
 <br>
 
 

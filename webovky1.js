@@ -61,8 +61,10 @@ http.createServer((req, res) => {
         obj.prijmeni = "Borec";
         obj.rokNarozeni = 1847;
         res.end(JSON.stringify(obj));
-    }
-    else if (q.pathname == "/jsoncitac"){
+    } else if(q.pathname == "/priklady/kontrola") {
+
+
+    } else if (q.pathname == "/jsoncitac"){
         res.writeHead(200, {"Content-type": "application/json"});
         let pocet = {};
         druhejcitac ++;
