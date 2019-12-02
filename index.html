@@ -4,11 +4,12 @@
     <meta charset="UTF-8">
     <title>Vítejte u mě</title>
     <script>
+        const HOST = window.location.protocol + "//" + window.location.hostname + ((window.location.port) ? ":" + window.location.port : "");
         function nactisvatky (){
             setInterval(seznamzprav, 1000);
             document.getElementById("kalendar").valueAsDate = new Date();
             svatekdledata();
-            fetch("http://localhost:8888/svatky").then(function(response) {
+            fetch(HOST+"/svatky").then(function(response) {
                 response.text().then(function(text) {
                     let obj = JSON.parse(text);
                     document.getElementById("datum").innerHTML = obj.datumCesky;
@@ -19,7 +20,7 @@
         }
         function svatekdledata (){
             let d = document.getElementById("kalendar").valueAsDate;
-            fetch("http://localhost:8888/svatky?d="+d.getDate()+"&m="+(d.getMonth()+1)).then(function(response) {
+            fetch(HOST+"/svatky?d="+d.getDate()+"&m="+(d.getMonth()+1)).then(function(response) {
                 response.text().then(function(text) {
                     let obj = JSON.parse(text);
                     document.getElementById("svatek3").innerHTML = obj.svatek;
@@ -28,7 +29,7 @@
         }
         let nahodnecislo;
         function cislo (){
-            fetch("http://localhost:8888/cislo").then(function(response) {
+            fetch(HOST+"/cislo").then(function(response) {
                 response.text().then(function(text) {
                     let obj = JSON.parse(text);
                     //document.getElementById("nahodnecislo").innerHTML = obj.nahodnecislo;
@@ -51,7 +52,7 @@
             let chatmsg = document.getElementById("chatmsg").value;
             let prezdivka = document.getElementById("prezdivka").value;
             document.getElementById("chatmsg").value = "";
-            fetch("http://localhost:8888/chat/addmsg?msg="+chatmsg).then(function(response) {
+            fetch(HOST+"/chat/addmsg?nick="+prezdivka+"&msg="+chatmsg).then(function(response) {
                 response.text().then(function(text) {
                     let obj = JSON.parse(text);
                 });
@@ -59,12 +60,12 @@
             });
         }
         function seznamzprav() {
-            fetch("http://localhost:8888/chat/listmsgs").then(function (response) {
+            fetch(HOST+"/chat/listmsgs").then(function (response) {
                 response.text().then(function (text) {
                     let obj = JSON.parse(text);
                     let s = "";
                     for (let o of obj.messages) {
-                        s = s + o.time + "<br>" + o.text + "<br>";
+                        s = s + o.time + "<br>" + o.prezdivka + ":" + o.text + "<br>";
                     }
                     document.getElementById("chatmsgs").innerHTML = s;
                 });
@@ -80,7 +81,7 @@
 </head>
 <body onload = nactisvatky() style="background-color: yellow">
 
-<h1>Vítejte u mně</h1>
+<font face = "Comic sans MS" size =" 5"><h1>Vítejte bráškové</h1></font>
 
 Dnes je <span id="datum">...</span>, svátek má <span id="svatek">...</span>, zítra má <span id="svatekZitra">...</span>.
 <br>
@@ -108,6 +109,10 @@ Dnes je <span id="datum">...</span>, svátek má <span id="svatek">...</span>, z
 <span id="nahodnecislo"></span>
 <br>
 Je to <span id="porovnani"></span>
+<br>
+<br>
+<span style="font-size: 100px; color: black; scrollbar-face-color: indigo" >Memečko pro pobavení</span>
+
 <br>
 
 

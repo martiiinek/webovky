@@ -6,7 +6,7 @@
     <title>Datum</title>
     <script>
         function nactidatum (){
-            fetch("http://localhost:150/denvtydnu").then(function(response) {
+            fetch("http://localhost:8080/denvtydnu").then(function(response) {
                 response.text().then(function(text) {
                     let obj = JSON.parse(text);
                     document.getElementById("den").innerHTML = obj.denVTydnuCesky.toLowerCase();
