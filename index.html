@@ -71,12 +71,44 @@
                 });
             });
         }
+        function addUser{
+            let nickname = document.getElementById("reg-login").value;
+            let password = document.getElementById("reg-password").value;
+
+            fetch(HOST+"//?nick="+prezdivka+"&msg="+chatmsg).then(function(response) {
+                response.text().then(function(text) {
+                    let obj = JSON.parse(text);
+                });
+
+            });
+        }
+        function register.zobrazit{
+            fetch(HOST+"/users/data").then(function (response) {
+                response.text().then(function (text) {
+                    let obj = JSON.parse(text);
+                    let s = "";
+                    for (let o of obj.uzivatel) {
+                        s = s + "<br>" + o.krycijmeno + "Jmeno"  + "<br>";
+                    }
+                    document.getElementById("seznam_uzivatelu").innerHTML = s;
+                });
+            });
+        }
+
         function enter(){
             if (event.keyCode === 13) {
                 poslizpravu();
             }
         }
-
+            const HOST = window.location.protocol + "//" + window.location.hostname + ((window.location.port) ? ":" + window.location.port : "");
+            function spustPoNacteni() {
+            //ukazDivPrihl();
+        }
+            function ukazDivPrihl() {
+            document.getElementById("div_prihl").style.display = "block";
+            document.getElementById("div_reg").style.display = "none";
+            document.getElementById("div_chat").style.display = "none";
+        }
     </script>
 </head>
 <body onload = nactisvatky() style="background-color: yellow">
@@ -88,7 +120,7 @@ Dnes je <span id="datum">...</span>, svátek má <span id="svatek">...</span>, z
 
 <h1>chat</h1>
 <div id="chatmsgs"></div>
-<input type="text" id="prezdivka">
+<input type="text" id="listmsg">
 <br>
 <input type="text" id="chatmsg"><input type="button" value="Odešli" onclick="poslizpravu()">
 
@@ -116,8 +148,38 @@ Je to <span id="porovnani"></span>
 <audio controls autoplay="autoplay">
     <source src="ztracis.mp3"  type="audio/mpeg">
 </audio>
-
 <br>
+
+<div id="div_prihl">
+    <h3>Přihlášení</h3>
+    Přihlašovací jméno: <input type="text" id="login"><br>
+    Heslo: <input type="password" id="password"><br>
+    <input type="button" value="Přihlásit">
+    <input type="button" value="Registrovat..." onclick="">
+</div>
+
+<div id="div_reg">
+    <h3>Registrace</h3>
+
+    Přihlašovací jméno: <input type="text" id="reg-login"><br>
+    Heslo: <input type="password" id="reg-password"><br>
+    Zopakujte heslo: <input type="password" id="reg-password2"><br>
+
+    <input type="button" value="Registrovat" onclick="ukazDivPrihl">
+    <input type="button" value="Storno" onclick="">
+</div>
+
+<div id="seznam_uzivatelu"></div>
+
+<div id="div_chat">
+    <div id="msglist">...</div>
+    <input type="text" id="prezdivka" placeholder="SEM DEJ PREZDIVKU">
+    <input type="text" id="zprava" placeholder="SEM DEJ ZPRAVU">
+    <input type="button" value="Přidat" onclick="">
+</div>
+
+
+
 
 
 </body>

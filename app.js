@@ -6,6 +6,7 @@ const uniqid = require("uniqid")
 const apiDenVTydnu = require('./apiDenVTydnu').apiDenVTydnu;
 const apiSvatky = require('./apiSvatky').apiSvatky;
 const apiChat = require('./apichat').apiChat;
+const apiUsers = require('./apiusers').apiUsers;
 const apicislo = require('./apiCislo').apicislo;
 
 let citac = 0;
@@ -78,7 +79,10 @@ http.createServer((req, res) => {
         apiDenVTydnu(req, res);
     }
     else if (q.pathname == "/svatky"){
-        apiSvatky(req, res);
+        apiSvatky(req, res);}
+
+    else if (q.pathname == "/users"){
+            apiUsers(req, res);
     }
     else if (q.pathname == "/chat/listmsgs"){
         apiChat(req, res);
