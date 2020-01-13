@@ -79,10 +79,10 @@ http.createServer((req, res) => {
         apiDenVTydnu(req, res);
     }
     else if (q.pathname == "/svatky"){
-        apiSvatky(req, res);}
-
-    else if (q.pathname == "/users"){
-            apiUsers(req, res);
+        apiSvatky(req, res);
+    }
+    else if (q.pathname.startsWith("/users/")) {
+        apiUsers(req, res);
     }
     else if (q.pathname == "/chat/listmsgs"){
         apiChat(req, res);

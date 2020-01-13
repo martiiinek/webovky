@@ -71,52 +71,94 @@
                 });
             });
         }
-        function addUser{
-            let nickname = document.getElementById("reg-login").value;
-            let password = document.getElementById("reg-password").value;
 
-            fetch(HOST+"//?nick="+prezdivka+"&msg="+chatmsg).then(function(response) {
+        function registrovat() {
+            let body = {};
+            body.name = document.getElementById("reg-name").value;
+            body.login = document.getElementById("reg-login").value;
+            body.password = document.getElementById("reg-password").value;
+            body.email = document.getElementById("reg-email").value;
+            let options = {};
+            options.method = "POST";
+            options.body = JSON.stringify(body);
+            fetch(HOST+"/users/add", options).then(function(response) {
                 response.text().then(function(text) {
                     let obj = JSON.parse(text);
-                });
-
-            });
-        }
-        function register.zobrazit{
-            fetch(HOST+"/users/data").then(function (response) {
-                response.text().then(function (text) {
-                    let obj = JSON.parse(text);
-                    let s = "";
-                    for (let o of obj.uzivatel) {
-                        s = s + "<br>" + o.krycijmeno + "Jmeno"  + "<br>";
+                    if (obj.error) {
+                        alert(obj.error);
+                    } else {
+                        ukazDivPrihl();
                     }
-                    document.getElementById("seznam_uzivatelu").innerHTML = s;
                 });
             });
         }
-
-        function enter(){
-            if (event.keyCode === 13) {
-                poslizpravu();
-            }
+        function prihlasit() {
+            let body = {};
+            body.login = document.getElementById("login").value;
+            body.password = document.getElementById("password").value;
+            let options = {};
+            options.method = "POST";
+            options.body = JSON.stringify(body);
+            fetch(HOST+"/users/login", options).then(function(response) {
+                response.text().then(function(text) {
+                    let obj = JSON.parse(text);
+                    if (obj.error) {
+                        alert(obj.error);
+                    } else {
+                        document.getElementById("myname").innerHTML = obj.name;
+                        setInterval(seznamzprav, 1000); //po 1s se bude aktualizovat seznam zprav chatu
+                        ukazDivChat();
+                    }
+                });
+            });
         }
-            const HOST = window.location.protocol + "//" + window.location.hostname + ((window.location.port) ? ":" + window.location.port : "");
-            function spustPoNacteni() {
-            //ukazDivPrihl();
-        }
-            function ukazDivPrihl() {
+        function ukazDivPrihl() {
             document.getElementById("div_prihl").style.display = "block";
             document.getElementById("div_reg").style.display = "none";
             document.getElementById("div_chat").style.display = "none";
         }
+        function ukazDivReg() {
+            document.getElementById("div_prihl").style.display = "none";
+            document.getElementById("div_reg").style.display = "block";
+            document.getElementById("div_chat").style.display = "none";
+        }
+        function ukazDivChat() {
+            document.getElementById("div_prihl").style.display = "none";
+            document.getElementById("div_reg").style.display = "none";
+            document.getElementById("div_chat").style.display = "block";
+        }
+        function poNacteni() {
+            nactisvatky();
+            ukazDivPrihl();
+        }
     </script>
 </head>
-<body onload = nactisvatky() style="background-color: yellow">
+
+<body onload="poNacteni()" style="background-color: yellow">
 
 <font face = "Comic sans MS" size =" 5"><h1>Vítejte bráškové</h1></font>
 
 Dnes je <span id="datum">...</span>, svátek má <span id="svatek">...</span>, zítra má <span id="svatekZitra">...</span>.
 <br>
+
+<div id="div_prihl">
+    <h3>Přihlášení</h3>
+    Přihlašovací jméno: <input type="text" id="login"><br>
+    Heslo: <input type="password" id="password"><br>
+    <input type="button" value="Přihlásit" onclick="prihlasit()">
+    <input type="button" value="Registrovat..." onclick="ukazDivReg()">
+</div>
+
+<div id="div_reg" style="background-color: coral">
+    <h3>Registrace</h3>
+    Jméno nebo přezdívka: <input type="text" id="reg-name"><br>
+    Přihlašovací jméno: <input type="text" id="reg-login"><br>
+    Heslo: <input type="password" id="reg-password"><br>
+    Zopakujte heslo: <input type="password" id="reg-password2"><br>
+    E-mail: <input type="email" id="reg-email"><br>
+    <input type="button" value="Registrovat" onclick="registrovat()">
+    <input type="button" value="Storno" onclick="ukazDivPrihl()">
+</div>
 
 <h1>chat</h1>
 <div id="chatmsgs"></div>
@@ -130,7 +172,7 @@ Dnes je <span id="datum">...</span>, svátek má <span id="svatek">...</span>, z
 <br>
 <img src="biceps.jpg">
 <br>
-<span style="font-size: 100px; color: yellow; background-color: black" > Toto je Danův bicák, pokud by Vám to náhodou nedošlo...</span>
+<span style="font-size: 40px; color: yellow; background-color: black" > Toto je Danův bicák, pokud by Vám to náhodou nedošlo...</span>
 <br>
 <br>
 <b style = "color:green"> Zkus uhádnout číslo od 5 do 10, bráško</b>
@@ -150,33 +192,6 @@ Je to <span id="porovnani"></span>
 </audio>
 <br>
 
-<div id="div_prihl">
-    <h3>Přihlášení</h3>
-    Přihlašovací jméno: <input type="text" id="login"><br>
-    Heslo: <input type="password" id="password"><br>
-    <input type="button" value="Přihlásit">
-    <input type="button" value="Registrovat..." onclick="">
-</div>
-
-<div id="div_reg">
-    <h3>Registrace</h3>
-
-    Přihlašovací jméno: <input type="text" id="reg-login"><br>
-    Heslo: <input type="password" id="reg-password"><br>
-    Zopakujte heslo: <input type="password" id="reg-password2"><br>
-
-    <input type="button" value="Registrovat" onclick="ukazDivPrihl">
-    <input type="button" value="Storno" onclick="">
-</div>
-
-<div id="seznam_uzivatelu"></div>
-
-<div id="div_chat">
-    <div id="msglist">...</div>
-    <input type="text" id="prezdivka" placeholder="SEM DEJ PREZDIVKU">
-    <input type="text" id="zprava" placeholder="SEM DEJ ZPRAVU">
-    <input type="button" value="Přidat" onclick="">
-</div>
 
 
 
