@@ -1,6 +1,4 @@
 const url = require('url');
-const Entities = require('html-entities').AllHtmlEntities;
-const entities = new Entities();
 const fs = require("fs");
 const crypto = require("crypto");
 
@@ -16,84 +14,58 @@ if (fs.existsSync("users.json")) {
     }
 
 exports.apiUsers = function (req, res) {
-    let q = url.parse(req.url, true);
-    if (q.pathname.endsWith("/list")) {
+    if (req.pathname.endsWith("/list")) {
         res.writeHead(200, {
             "Content-type": "application/json"
         });
         let obj = {};
         obj.users = users;
         res.end(JSON.stringify(obj));
-    } else if (q.pathname.endsWith("/add")) {
-        let data = "";
-        req.on('data', function (chunk) {
-            try {
-                data += chunk;
-            } catch (e) {
-                console.error(e);
-            }
-        })
-        req.on('end', function () {
-            if (data) {
-                let body = JSON.parse(data);
-                res.writeHead(200, {
-                    "Content-type": "application/json"
-                });
-                let obj = {}
-                obj.login = entities.encode(body.login);
-                let userExists = false;
-                for (let u of users) {
-                    if (u.login === obj.login) {
-                        userExists = true;
-                        break;
-                    }
-                }
-                if (userExists) {
-                    obj.error = "Sory bráško, to asi nedáš"
-                } else {
-                    obj.name = entities.encode(body.name);
-                    obj.password = zamixujHeslo(entities.encode(body.password));
-                    obj.email = entities.encode(body.email);
-                    users.push(obj);
-                    fs.writeFileSync("users.json", JSON.stringify(users, null, 2));
-                }
-                res.end(JSON.stringify(obj));
-            };
+    } else if (req.pathname.endsWith("/add")) {
+        res.writeHead(200, {
+            "Content-type": "application/json"
         });
-    } else if (q.pathname.endsWith("/login")) {
-        let data = "";
-        req.on('data', function (chunk) {
-            try {
-                data += chunk;
-            } catch (e) {
-                console.error(e);
+        let obj = {}
+        obj.login = req.parameters.login;
+        let userExists = false;
+        for (let u of users) {
+            if (u.login === obj.login) {
+                userExists = true;
+                break;
             }
-        })
-        req.on('end', function () {
-            if (data) {
-                let body = JSON.parse(data);
-                res.writeHead(200, {
-                    "Content-type": "application/json"
-                });
-                let obj = {};
-                let login = entities.encode(body.login);
-                let found = false;
-                for (let u of users) {
-                    if (u.login === login) {
-                        found = true;
-                        if (u.password === entities.encode(body.password)) {
-                            obj.name = u.name;
-                        } else {
-                            obj.error = "seš si jistej?";
-                        }
-                        break; //vyskoceni z cyklu
+        }
+        if (userExists) {
+            obj.error = "Sory bráško, to asi nepůjde"
+        } else {
+            obj.name = req.parameters.name;
+            obj.password = zamixujHeslo(req.parameters.password);
+            obj.email = req.parameters.email;
+            users.push(obj);
+            fs.writeFileSync("users.json", JSON.stringify(users, null, 2));
+        }
+        res.end(JSON.stringify(obj));
+    } else if (req.pathname.endsWith("/login")) {
+            res.writeHead(200, {
+                "Content-type": "application/json"
+            });
+            let obj = {};
+            let login = req.parameters.login;
+            let found = false;
+            for (let u of users) {
+                if (u.login === login) {
+                    found = true;
+                    if (u.password === zamixujHeslo(req.parameters.password)) {
+                        obj.name = u.name;
+                    } else {
+                        obj.error = "seš si jistej?";
                     }
+                    break; //vyskoceni z cyklu
                 }
-                if (!found) {
-                    obj.error = "invalid login";
-                }
-                res.end(JSON.stringify(obj));
-            };
-        });
+            }
+            if (!found) {
+                obj.error = "seš si jistej? Něco tam máš asi špatně, bráško :-(";
+            }
+            res.end(JSON.stringify(obj));
+
     }
 };
