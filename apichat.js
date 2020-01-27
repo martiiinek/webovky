@@ -1,4 +1,5 @@
 const url = require('url');
+const {getLoggedUser} = require("./apiusers");
 let msgs =  new Array();
 
 exports.apiChat = function(req, res){
@@ -7,7 +8,12 @@ exports.apiChat = function(req, res){
     if (q.pathname == "/chat/listmsgs"){
         res.writeHead(200, {"Content-type": "application/json"});
         let obj = {};
-        obj.messages = msgs;
+        let loggedUser = getLoggedUser(req.parameters.token);
+        if (loggedUser) {
+            obj.messages = msgs;
+        } else {
+        obj.error = "Už to zase zkoušís? Fakt? Musíš se přihlásit dpc!!!!!!!!!!";
+        }
         res.end(JSON.stringify(obj));
     }
     else if (q.pathname == "/chat/addmsg") {

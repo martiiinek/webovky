@@ -6,8 +6,8 @@
     <link rel="icon" href="">
     <script>
         const HOST = window.location.protocol + "//" + window.location.hostname + ((window.location.port) ? ":" + window.location.port : "");
+        let token;
         function nactisvatky (){
-            setInterval(seznamzprav, 1000);
             document.getElementById("kalendar").valueAsDate = new Date();
             svatekdledata();
             fetch(HOST+"/svatky").then(function(response) {
@@ -61,14 +61,19 @@
             });
         }
         function seznamzprav() {
-            fetch(HOST+"/chat/listmsgs").then(function (response) {
+            fetch(HOST+"/chat/listmsgs?token="+token).then(function (response) {
                 response.text().then(function (text) {
                     let obj = JSON.parse(text);
+                    if (obj.error) {
+                        //alert(obj.error);
+
+                    } else {
                     let s = "";
                     for (let o of obj.messages) {
                         s = s + o.time + "<br>" + o.prezdivka + ":" + o.text + "<br>";
                     }
                     document.getElementById("chatmsgs").innerHTML = s;
+                    }
                 });
             });
         }
@@ -106,6 +111,7 @@
                     if (obj.error) {
                         alert(obj.error);
                     } else {
+                        token = obj.token;
                         document.getElementById("myname").innerHTML = obj.name;
                         setInterval(seznamzprav, 1000); //po 1s se bude aktualizovat seznam zprav chatu
                         ukazDivChat();
@@ -150,7 +156,7 @@ Dnes je <span id="datum">...</span>, svátek má <span id="svatek">...</span>, z
     <input type="button" value="Registrovat..." onclick="ukazDivReg()">
 </div>
 
-<div id="div_reg" style="background-color: coral">
+<div id="div_reg">
     <h3>Registrace</h3>
     Jméno nebo přezdívka: <input type="text" id="reg-name"><br>
     Přihlašovací jméno: <input type="text" id="reg-login"><br>
@@ -161,11 +167,10 @@ Dnes je <span id="datum">...</span>, svátek má <span id="svatek">...</span>, z
     <input type="button" value="Storno" onclick="ukazDivPrihl()">
 </div>
 
-<h1>chat</h1>
-<div id="chatmsgs"></div>
-<input type="text" id="listmsg">
-<br>
-<input type="text" id="chatmsg"><input type="button" value="Odešli" onclick="poslizpravu()">
+    <div id="div_chat">
+        <div id="chatmsgs"></div>
+        <b id="myname">...</b>:<input type="text" id="chatmsg"><input type="button" value="Odešli" onclick="poslizpravu()">
+    </div>
 
 <br><br>
 <input type="date" id="kalendar" onchange="svatekdledata()"> má svátek <span id="svatek3">...</span>

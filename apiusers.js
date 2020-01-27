@@ -6,10 +6,11 @@ let users = new Array();
 if (fs.existsSync("users.json")) {
     users = JSON.parse(fs.readFileSync("users.json"));
 }
+let loggedUsers = new Array();
 
     function zamixujHeslo(pw) {
         let salt = pw.split("").reverse().join("");
-        let mixPw = crypto.createHmac("sha256", salt).update(pw).digest("hex")
+        let mixPw = crypto.createHmac("sha256", salt).update(pw).digest("hex");
         return mixPw;
     }
 
@@ -25,7 +26,7 @@ exports.apiUsers = function (req, res) {
         res.writeHead(200, {
             "Content-type": "application/json"
         });
-        let obj = {}
+        let obj = {};
         obj.login = req.parameters.login;
         let userExists = false;
         for (let u of users) {
@@ -51,21 +52,29 @@ exports.apiUsers = function (req, res) {
             let obj = {};
             let login = req.parameters.login;
             let found = false;
+            obj.error = "Seš si jistej? Něco tam máš asi špatně, bráško :-(";
             for (let u of users) {
                 if (u.login === login) {
                     found = true;
                     if (u.password === zamixujHeslo(req.parameters.password)) {
                         obj.name = u.name;
-                    } else {
-                        obj.error = "seš si jistej?";
+                        obj.error = null; //undefined
+                        let token = crypto.randomBytes(16).toString('hex'); //32 nahodnych znaku
+                        obj.token = token;
+                        let objLoggedUsers = {};
+                        objLoggedUsers.name = u.name;
+                        loggedUsers[token] = objLoggedUsers; // natvrdo nastavim index nove polozky na hodnotu tokenu
                     }
                     break; //vyskoceni z cyklu
                 }
             }
-            if (!found) {
-                obj.error = "seš si jistej? Něco tam máš asi špatně, bráško :-(";
-            }
+
             res.end(JSON.stringify(obj));
 
     }
 };
+
+    exports.getLoggedUser = function (token) {
+        let u = loggedUsers[token];
+        return u;
+    }
